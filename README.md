@@ -17,7 +17,6 @@ Basic Javascript knowledge is necessary to setup this plugin: how to set setting
 [![Generic badge](https://img.shields.io/badge/jQuery-3.7.1-<COLOR>.svg)](https://shields.io/)
 [![Generic badge](https://img.shields.io/badge/@babel/core-7.25.2-<COLOR>.svg)](https://shields.io/)
 
----
 
 ## Table of contents
 
@@ -26,15 +25,12 @@ Basic Javascript knowledge is necessary to setup this plugin: how to set setting
   * [What is](#what-is)
   * [Others](#others)
 
----
 
 ### How to use
 
----
 
 ### Installation
 
----
 
 ### What is
 
@@ -44,6 +40,7 @@ Basic Javascript knowledge is necessary to setup this plugin: how to set setting
 4. [jQuery]()
 5. [Babel](https://babeljs.io/docs/)
 6. [Others](https://stackoverflow.com/questions/35062852/npm-vs-bower-vs-browserify-vs-gulp-vs-grunt-vs-webpack)
+
 
 ### Others
 
