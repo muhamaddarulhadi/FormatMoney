@@ -1,8 +1,8 @@
 /* 
     Title : Money Formatter
     Created by : Hadi
-    Date: 22/09/2024
-    Version: 1.0
+    Date: 23/10/2024
+    Version: 1.1
 */
 
 import $ from 'jquery'; // COMMENT THIS IF YOU WANT TO PUBLISH ON PRODUCTION

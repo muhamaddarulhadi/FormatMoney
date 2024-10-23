@@ -1,8 +1,8 @@
 /* 
     Title : Money Formatter
     Created by : Hadi
-    Date: 22/09/2024
-    Version: 1.0
+    Date: 23/10/2024
+    Version: 1.1
 */
 
 import { MoneyUtils } from './money-utils.js';
@@ -26,7 +26,7 @@ export class MoneyFormatter {
     // Method to parse and format a number, maintaining decimal places
     parseAndFormatForView(num) {
         // Check if num is an empty string
-        if (num === '' || num === null || num === undefined || isNaN(parseFloat(num))) {
+        if (num === '' || num === null || num === undefined || num === 0 || num === 0.00 || isNaN(parseFloat(num))) {
             return '-'; // Return as '-'
         }
 
