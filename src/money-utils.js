@@ -1,11 +1,11 @@
 /* 
     Title : Money Formatter
     Created by : Hadi
-    Date: 22/09/2024
-    Version: 1.0
+    Date: 07/11/2024
+    Version: 1.3
 */
 
-// Utility to add and remove commas from numbers
+// Utility
 export class MoneyUtils {
     static addCommas(num) {
         num = num.toString();
@@ -32,6 +32,32 @@ export class MoneyUtils {
         }
     
         return num.replace(/,/g, ''); // If no commas, this will simply return the string as is
+    }
+
+    static sanitizedValue(num) {
+        // Remove all characters except digits, decimal point, and negative sign
+        let sanitizedValue = num.replace(/[^0-9\.\-]/g, '');
+    
+        // Ensure only one `-` at the start and only one decimal point
+        if (sanitizedValue.indexOf('-') > 0) {
+            sanitizedValue = sanitizedValue.replace('-', ''); // Remove `-` if it's not at the start
+        }
+    
+        let decimalIndex = sanitizedValue.indexOf('.');
+    
+        // If there's a decimal point, remove any additional decimals
+        if (decimalIndex !== -1) {
+            num = sanitizedValue.slice(0, decimalIndex + 1) + sanitizedValue.slice(decimalIndex + 1).replace(/\./g, ''); // Keep only one decimal point
+        }
+    
+        return num;
+    }
+
+    static checkValueContainsOnly(num) {
+        // If input is blank or only contains a decimal point, do not format
+        if (num === "" || num === "." || num === "-") {
+            return; // Exit the function if input is blank, only ".", or "-"
+        }
     }
 }
 

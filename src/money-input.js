@@ -1,11 +1,11 @@
 /* 
     Title : Money Formatter
     Created by : Hadi
-    Date: 22/09/2024
-    Version: 1.0
+    Date: 07/11/2024
+    Version: 1.3
 */
 
-import $ from 'jquery';
+// import $ from 'jquery';  // COMMENT THIS IF YOU WANT TO PUBLISH ON PRODUCTION
 import { MoneyUtils } from './money-utils.js';
 
 
@@ -18,6 +18,9 @@ $.fn.formatMoneyInput = function(options) {
 
     // Regular expression for validating input
     const regex = new RegExp(`^-?\\d*(\\.\\d{0,${settings.decimalPlaces}})?$`);
+    const allowedKeys = [
+        'Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', '.', 'Home', 'End', ',', '-'
+    ];
     // const regex = new RegExp(`^-?\\d*[.]?\\d{0,${settings.decimalPlaces}}$`)
     // const regex = new RegExp(`^\\d*(\\.\\d{0,${settings.decimalPlaces}})?$`);
 
@@ -89,18 +92,32 @@ $.fn.formatMoneyInput = function(options) {
             let unformattedValue = MoneyUtils.removeCommas(value); // Remove any commas
             let cursorPosition = this.selectionStart; // Get current cursor position
 
-            // If input is blank, do not format
-            if (unformattedValue === "") {
-                return; // Exit the function if input is blank
-            }
+            // // If input is blank or only contains a decimal point, do not format
+            // if (unformattedValue === "" || unformattedValue === "." || unformattedValue === "-") {
+            //     return; // Exit the function if input is blank, only ".", or "-"
+            // }
+
+            MoneyUtils.checkValueContainsOnly(unformattedValue)
+
+            // // Sanitize the pasted content by removing invalid characters
+            // let sanitizedValue = unformattedValue.replace(/[^0-9\.\-]/g, ''); // Allow only digits, decimal point, and negative sign
+            
+            // // Ensure only one `-` at the start and only one decimal point
+            // if (sanitizedValue.indexOf('-') > 0) sanitizedValue = sanitizedValue.replace('-', ''); // Remove `-` if not at the start
+            // let decimalIndex = sanitizedValue.indexOf('.');
+            // if (decimalIndex !== -1) {
+            //     sanitizedValue = sanitizedValue.slice(0, decimalIndex + 1) + sanitizedValue.slice(decimalIndex + 1).replace(/\./g, ''); // Keep only one decimal point
+            // }
+
+            let sanitizedValue = MoneyUtils.sanitizedValue(unformattedValue)
 
             // Validate against the regular expression
-            if (regex.test(unformattedValue)) {
+            if (regex.test(sanitizedValue)) {
                 // Parse the value as a float and fix to 2 decimal places
                 // let floatValue = parseFloat(unformattedValue) || 0;
                 // let fixedValue = floatValue.toFixed(settings.decimalPlaces);
                 // let formattedValue = addCommas(fixedValue);
-                let formattedValue = MoneyUtils.addCommas(unformattedValue);
+                let formattedValue = MoneyUtils.addCommas(sanitizedValue);
 
                 // Set the formatted value in the input
                 $input.val(formattedValue);
@@ -140,30 +157,96 @@ $.fn.formatMoneyInput = function(options) {
         // });
 
         // Handle paste event
-        $input.on("paste", function () {
+        // $input.on("paste", function () {
+        //     setTimeout(function() {
+        //         let pastedValue = $input.val();
+        //         let unformattedValue = MoneyUtils.removeCommas(pastedValue);
+        //         if (regex.test(unformattedValue)) {
+        //             let formattedValue = MoneyUtils.addCommas(unformattedValue);
+        //             $input.val(formattedValue);
+        //         }
+        //     }, 0); // Delay to ensure paste action is completed
+        // });
+
+        // Handle paste event to allow only valid characters
+        $input.on("paste", function (e) {
             setTimeout(function() {
+                // Retrieve pasted content from clipboard
                 let pastedValue = $input.val();
-                let unformattedValue = MoneyUtils.removeCommas(pastedValue);
-                if (regex.test(unformattedValue)) {
-                    let formattedValue = MoneyUtils.addCommas(unformattedValue);
+                let unformattedValue = MoneyUtils.removeCommas(pastedValue); // Remove commas if any
+
+                // // If input is blank or only contains a decimal point, do not format
+                // if (unformattedValue === "" || unformattedValue === "." || unformattedValue === "-") {
+                //     return; // Exit the function if input is blank, only ".", or "-"
+                // }
+
+                MoneyUtils.checkValueContainsOnly(unformattedValue)
+            
+                // // Sanitize the pasted content by removing invalid characters
+                // let sanitizedValue = unformattedValue.replace(/[^0-9\.\-]/g, ''); // Allow only digits, decimal point, and negative sign
+            
+                // // Ensure only one `-` at the start and only one decimal point
+                // if (sanitizedValue.indexOf('-') > 0) sanitizedValue = sanitizedValue.replace('-', ''); // Remove `-` if not at the start
+                // let decimalIndex = sanitizedValue.indexOf('.');
+                // if (decimalIndex !== -1) {
+                //     sanitizedValue = sanitizedValue.slice(0, decimalIndex + 1) + sanitizedValue.slice(decimalIndex + 1).replace(/\./g, ''); // Keep only one decimal point
+                // }
+
+                let sanitizedValue = MoneyUtils.sanitizedValue(unformattedValue)
+            
+                // Check if the sanitized value matches the regex
+                if (regex.test(sanitizedValue)) {
+                    // Format the sanitized value by adding commas
+                    let formattedValue = MoneyUtils.addCommas(sanitizedValue);
+                    // Update the input field with the formatted value
                     $input.val(formattedValue);
                 }
             }, 0); // Delay to ensure paste action is completed
         });
 
-        // Keydown event to restrict invalid characters
+        // // Keydown event to restrict invalid characters
+        // $input.on("keydown", function (e) {
+
+        //     // console.log(e.key)
+        //     // // Allow: backspace, delete, tab, escape, enter, and period (.)
+        //     // const allowedKeys = [
+        //     //     'Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', '.', 'Home', 'End', ',', '-'
+        //     // ];
+
+        //     // Allow keys in allowedKeys, Ctrl + V, and the negative symbol `-`
+        //     if (allowedKeys.includes(e.key) || (e.ctrlKey && e.key === 'v')) {
+        //         // Prevent multiple `-` signs or a `-` sign after other characters
+        //         if (e.key === '-' && $input.val().includes('-') && this.selectionStart !== 0) {
+        //             e.preventDefault();
+        //             return;
+        //         }
+        //         return; // Allow valid keys and Ctrl + V
+        //     }
+
+        //     // If shift key is pressed or non-numeric characters (other than period) are pressed, prevent it
+        //     if (e.shiftKey || (e.key < '0' || e.key > '9')) {
+        //         e.preventDefault(); // Block invalid characters
+        //     }
+        // });
+
         $input.on("keydown", function (e) {
-
-            // console.log(e.key)
-            // Allow: backspace, delete, tab, escape, enter, and period (.)
-            const allowedKeys = [
-                'Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', '.', 'Home', 'End', ','
-            ];
-
+            // Allow keys in allowedKeys, Ctrl + V, and the negative symbol `-`
             if (allowedKeys.includes(e.key) || (e.ctrlKey && e.key === 'v')) {
-                return; // Allow the keypress event to proceed for valid keys
+                // Allow `-` only at the start of the input (if cursor is at position 0)
+                if (e.key === '-' && this.selectionStart !== 0) {
+                    e.preventDefault(); // Prevent if `-` is not at the start
+                    return;
+                }
+                
+                // Prevent multiple `-` signs after the first one at the start
+                if (e.key === '-' && $input.val().includes('-') && this.selectionStart !== 0) {
+                    e.preventDefault(); // Prevent if there is already a `-` and it's not at the start
+                    return;
+                }
+        
+                return; // Allow valid keys and Ctrl + V
             }
-
+        
             // If shift key is pressed or non-numeric characters (other than period) are pressed, prevent it
             if (e.shiftKey || (e.key < '0' || e.key > '9')) {
                 e.preventDefault(); // Block invalid characters
@@ -173,7 +256,7 @@ $.fn.formatMoneyInput = function(options) {
         // On blur, force formatting to 2 decimal places or blank if empty
         $input.on("blur", function() {
             let value = MoneyUtils.removeCommas($input.val());
-            if (value) {
+            if (value && !isNaN(value)) {
                 value = parseFloat(value).toFixed(settings.decimalPlaces);
                 $input.val(MoneyUtils.addCommas(value));
             } else {
