@@ -96,23 +96,27 @@ $.fn.formatMoneyInput = function(options) {
             }, 0); // Delay to ensure paste action is completed
         });
 
-        // work on Windows, Linux, and Mac
+        // work on Windows, Linux, and Mac and for copy paste event when capslock on or off
         $input.on("keydown", function (e) {
-            // Allow keys in allowedKeys, Ctrl + V (Windows/Linux), Cmd + V (Mac), and the negative symbol `-`
-            if (allowedKeys.includes(e.key) || ((e.ctrlKey || e.metaKey) && (e.key === 'v' || e.key === 'V'))) {
+            // Detect copy (Cmd + C) and paste (Cmd + V) for both Mac and Windows/Linux
+            const isPaste = (e.ctrlKey || e.metaKey) && (e.key === 'v' || e.key === 'V');
+            const isCopy = (e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C');
+        
+            // Allow keys in allowedKeys, paste, copy, and negative symbol `-`
+            if (allowedKeys.includes(e.key) || isPaste || isCopy) {
                 // Allow `-` only at the start of the input (if cursor is at position 0)
                 if (e.key === '-' && this.selectionStart !== 0) {
-                    e.preventDefault(); // Prevent if `-` is not at the start
+                    e.preventDefault(); // Prevent `-` if not at the start
                     return;
                 }
         
                 // Prevent multiple `-` signs after the first one at the start
                 if (e.key === '-' && $input.val().includes('-') && this.selectionStart !== 0) {
-                    e.preventDefault(); // Prevent if there is already a `-` and it's not at the start
+                    e.preventDefault(); // Prevent if `-` is already present
                     return;
                 }
         
-                return; // Allow valid keys and Ctrl/Cmd + V
+                return; // Allow valid keys, paste, and copy
             }
         
             // If shift key is pressed or non-numeric characters (other than period) are pressed, prevent it
