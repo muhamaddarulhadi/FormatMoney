@@ -20,16 +20,16 @@ Basic Javascript knowledge is necessary to setup this plugin: how to set setting
 
 ## Table of contents
 
-  * [How to use](#how-to-use)
   * [Installation](#installation)
+  * [How to use](#how-to-use)
   * [What is](#what-is)
   * [Others](#others)
 
 
-### How to use
-
-
 ### Installation
+
+
+### How to use
 
 
 ### What is
