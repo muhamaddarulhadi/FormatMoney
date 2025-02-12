@@ -10,8 +10,8 @@ const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
-    // mode: 'production',
-    mode: 'development',
+    mode: 'production',
+    // mode: 'development',
     entry: './src/index.js',
     output: {
         path: path.resolve(__dirname, 'dist'),  // Output directory
@@ -21,9 +21,9 @@ module.exports = {
         umdNamedDefine: true,                   // Name the AMD module if used in AMD environment
         globalObject: 'this'                    // Ensures proper global object (useful for Node.js)
     },
-    // externals: {
-    //     jquery: 'jQuery' // Exclude jQuery from the bundle and expect it to be provided externally. If you want to publish this plugin for development, comment this.
-    // },
+    externals: {
+        jquery: 'jQuery' // Exclude jQuery from the bundle and expect it to be provided externally. If you want to publish this plugin for development, comment this.
+    },
     module: {
         rules: [
             {
